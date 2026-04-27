@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Illustrative CDAO AI/Data Programme Governance Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #003087;
+    --blue: #0050A0;
+    --blue-light: #E8EFF8;
+    --gold: #B8892A;
+    --gold-light: #F5EDD8;
+    --bg: #F4F6FA;
+    --surface: #FFFFFF;
+    --surface-2: #F0F3F8;
+    --border: #DDE3EE;
+    --text: #0A1628;
+    --text-2: #4A5568;
+    --text-3: #8A96AA;
+    --green: #1A7A4A;
+    --green-bg: #E6F4ED;
+    --amber: #B07800;
+    --amber-bg: #FEF5E0;
+    --red: #B91C1C;
+    --red-bg: #FDECEC;
+    --shadow: 0 1px 3px rgba(0,48,135,0.07), 0 1px 2px rgba(0,48,135,0.04);
+    --shadow-md: 0 4px 16px rgba(0,48,135,0.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
+
+  /* HEADER */
+  .header { background: var(--navy); padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .header-left { display: flex; align-items: center; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: white; padding-right: 18px; border-right: 1px solid rgba(255,255,255,0.18); margin-right: 18px; }
+  .logo em { color: var(--gold); font-style: normal; }
+  .header-title { font-size: 12px; color: rgba(255,255,255,0.6); }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .live-dot { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #FFD080; letter-spacing: 0.5px; }
+  .live-dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #FFD080; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .header-meta { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; }
+
+  /* DISCLAIMER */
+  .disclaimer { background: var(--gold-light); border-bottom: 1px solid #DFC98A; padding: 7px 40px; font-size: 11px; color: var(--gold); font-weight: 500; }
+
+  /* MAIN */
+  .main { max-width: 1320px; margin: 0 auto; padding: 28px 40px 48px; }
+
+  /* PAGE TITLE */
+  .page-title-block { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; }
+  .page-title-block h1 { font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+  .page-title-block p { font-size: 12px; color: var(--text-3); max-width: 540px; line-height: 1.6; }
+  .cycle-badge { text-align: right; }
+  .cycle-label { display: inline-block; background: var(--navy); color: white; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; margin-bottom: 4px; }
+  .cycle-date { display: block; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-3); }
+
+  /* KPI ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 18px 20px; box-shadow: var(--shadow); position: relative; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+  .kpi:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .kpi::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi.blue::after { background: var(--blue); }
+  .kpi.green::after { background: var(--green); }
+  .kpi.amber::after { background: var(--amber); }
+  .kpi.gold::after { background: var(--gold); }
+  .kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-3); margin-bottom: 10px; }
+  .kpi-value { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 600; color: var(--navy); line-height: 1; margin-bottom: 7px; }
+  .kpi-value sup { font-size: 14px; vertical-align: super; }
+  .kpi-note { font-size: 11px; color: var(--text-2); }
+  .delta { font-weight: 600; }
+  .delta.up { color: var(--green); }
+  .delta.dn { color: var(--red); }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
+  .tab { padding: 9px 22px; font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; white-space: nowrap; user-select: none; }
+  .tab:hover { color: var(--navy); }
+  .tab.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 16px; }
+  .card:last-child { margin-bottom: 0; }
+  .card-head { padding: 13px 18px 11px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 12px; font-weight: 600; color: var(--text); }
+  .card-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .card-body { padding: 16px 18px; }
+
+  /* RAG PILL */
+  .rag { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .rag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .rag.G { background: var(--green-bg); color: var(--green); }
+  .rag.G::before { background: var(--green); }
+  .rag.A { background: var(--amber-bg); color: var(--amber); }
+  .rag.A::before { background: var(--amber); }
+  .rag.R { background: var(--red-bg); color: var(--red); }
+  .rag.R::before { background: var(--red); }
+
+  /* RISK BADGE */
+  .risk-badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .risk-badge.Low { background: var(--green-bg); color: var(--green); }
+  .risk-badge.Medium { background: var(--amber-bg); color: var(--amber); }
+  .risk-badge.High { background: var(--red-bg); color: var(--red); }
+
+  /* ── TAB 1: PROGRAMME STATUS ── */
+
+  /* RAG SUMMARY — horizontal pills row */
+  .rag-summary-row { display: flex; gap: 12px; padding: 14px 18px; align-items: center; }
+  .rag-summary-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); flex: 1; }
+  .rag-summary-item.G { background: var(--green-bg); border-color: #B8DEC8; }
+  .rag-summary-item.A { background: var(--amber-bg); border-color: #F0D48A; }
+  .rag-summary-item.R { background: var(--red-bg); border-color: #F0BABA; }
+  .rag-sum-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .rag-sum-dot.G { background: var(--green); }
+  .rag-sum-dot.A { background: var(--amber); }
+  .rag-sum-dot.R { background: var(--red); }
+  .rag-sum-label { font-size: 11px; font-weight: 600; flex: 1; }
+  .rag-sum-label.G { color: var(--green); }
+  .rag-sum-label.A { color: var(--amber); }
+  .rag-sum-label.R { color: var(--red); }
+  .rag-sum-count { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; line-height: 1; }
+  .rag-sum-count.G { color: var(--green); }
+  .rag-sum-count.A { color: var(--amber); }
+  .rag-sum-count.R { color: var(--red); }
+
+  /* PROGRAMME TABLE */
+  .ptable { width: 100%; border-collapse: collapse; }
+  .ptable th { text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-3); padding: 8px 14px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .ptable td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 12px; }
+  .ptable tr:last-child td { border-bottom: none; }
+  .ptable tr:hover td { background: #FAFBFD; }
+  .prog-name { font-weight: 600; color: var(--navy); font-size: 12px; }
+  .prog-lob-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; background: var(--blue-light); color: var(--blue); }
+  .dep-tag { font-size: 11px; color: var(--text-2); }
+  .milestone-text { font-size: 11px; color: var(--text-2); }
+  .milestone-text.warn { color: var(--amber); }
+  .milestone-text.alert { color: var(--red); }
+
+  /* NEXT ACTIONS */
+  .action-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .action-item:last-child { border-bottom: none; }
+  .action-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .action-text { font-size: 12px; color: var(--text); flex: 1; }
+  .action-due { font-size: 10px; color: var(--text-3); flex-shrink: 0; font-family: 'DM Mono', monospace; margin-top: 1px; }
+
+  /* ── TAB 2: LINEAGE ── */
+  .lineage-wrap { padding: 24px 18px 18px; overflow-x: auto; }
+  .lineage-flow { display: flex; align-items: stretch; min-width: 680px; }
+  .ln-node { flex: 1; }
+  .ln-box { border: 1.5px solid var(--border); border-radius: 6px; padding: 12px 10px; margin: 0 5px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; height: 100%; }
+  .ln-box:hover { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,80,160,0.07); }
+  .ln-box.source { border-top: 3px solid var(--gold); }
+  .ln-box.transform { border-top: 3px solid var(--blue); }
+  .ln-box.control { border-top: 3px solid var(--amber); }
+  .ln-box.model { border-top: 3px solid var(--navy); }
+  .ln-box.consume { border-top: 3px solid var(--green); }
+  .ln-icon { font-size: 18px; margin-bottom: 6px; }
+  .ln-title { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .ln-sub { font-size: 10px; color: var(--text-3); line-height: 1.4; }
+  .ln-arrow { display: flex; align-items: center; color: var(--border); font-size: 18px; flex-shrink: 0; padding-bottom: 8px; }
+  .ln-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+  .ln-filter { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; border: 1px solid var(--border); cursor: pointer; color: var(--text-2); background: white; transition: all 0.15s; user-select: none; }
+  .ln-filter:hover { border-color: var(--navy); color: var(--navy); }
+  .ln-filter.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .ln-detail { background: var(--blue-light); border: 1px solid #C5D5EA; border-radius: 6px; padding: 14px 16px; margin: 0 18px 16px; display: none; }
+  .ln-detail.show { display: block; }
+  .ln-detail-title { font-size: 11px; font-weight: 600; color: var(--navy); margin-bottom: 10px; }
+  .ln-detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .ln-detail-item span { font-size: 11px; font-weight: 600; color: var(--text); display: block; margin-bottom: 2px; }
+  .ln-detail-item em { font-size: 11px; color: var(--text-3); font-style: normal; line-height: 1.4; display: block; }
+
+  /* DATA CONTROL TABLE */
+  .dctable { width: 100%; border-collapse: collapse; }
+  .dctable th { text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-3); padding: 8px 14px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .dctable td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 12px; }
+  .dctable tr:last-child td { border-bottom: none; }
+  .dctable tr:hover td { background: #FAFBFD; }
+
+  /* ── TAB 3: CONTROL READINESS ── */
+
+  /* READINESS BY DOMAIN */
+  .domain-bars { display: flex; flex-direction: column; gap: 14px; }
+  .domain-row { display: flex; align-items: center; gap: 12px; }
+  .domain-name { font-size: 12px; font-weight: 600; color: var(--text); width: 160px; flex-shrink: 0; }
+  .domain-bar-wrap { flex: 1; height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+  .domain-bar-fill { height: 100%; border-radius: 4px; }
+  .domain-bar-fill.G { background: var(--green); }
+  .domain-bar-fill.A { background: var(--amber); }
+  .domain-bar-fill.R { background: var(--red); }
+  .domain-pct { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600; width: 36px; text-align: right; }
+  .domain-pct.G { color: var(--green); }
+  .domain-pct.A { color: var(--amber); }
+  .domain-pct.R { color: var(--red); }
+
+  /* CONTROL READINESS PANEL */
+  .ctrl-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+  .ctrl-item:last-child { border-bottom: none; }
+  .ctrl-icon { width: 26px; height: 26px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+  .ctrl-icon.G { background: var(--green-bg); }
+  .ctrl-icon.A { background: var(--amber-bg); }
+  .ctrl-icon.R { background: var(--red-bg); }
+  .ctrl-body { flex: 1; }
+  .ctrl-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .ctrl-note { font-size: 11px; color: var(--text-3); line-height: 1.4; }
+  .ctrl-right { flex-shrink: 0; }
+
+  /* PRIORITY REMEDIATION */
+  .remed-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; }
+  .remed-item:last-child { margin-bottom: 0; }
+  .remed-item.R { background: var(--red-bg); border-left: 3px solid var(--red); }
+  .remed-item.A { background: var(--amber-bg); border-left: 3px solid var(--amber); }
+  .remed-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .remed-dot.R { background: var(--red); }
+  .remed-dot.A { background: var(--amber); }
+  .remed-text { flex: 1; font-size: 12px; color: var(--text); }
+  .remed-due { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--text-3); flex-shrink: 0; margin-top: 1px; }
+
+  /* ── TAB 4: STAKEHOLDER & DEPENDENCY ── */
+
+  /* STAKEHOLDER MAP */
+  .sh-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface-2); border-radius: 5px; margin-bottom: 8px; }
+  .sh-item:last-child { margin-bottom: 0; }
+  .sh-name { font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .sh-role { font-size: 11px; color: var(--text-3); }
+
+  /* DEPENDENCY TABLE */
+  .dep-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .dep-row:last-child { border-bottom: none; }
+  .dep-from { font-size: 11px; font-weight: 600; color: var(--navy); width: 160px; flex-shrink: 0; }
+  .dep-arrow { font-size: 12px; color: var(--text-3); flex-shrink: 0; }
+  .dep-chips { flex: 1; display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { padding: 2px 7px; border-radius: 3px; font-size: 10px; font-weight: 500; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); }
+  .dep-status { width: 18px; height: 18px; border-radius: 50%; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dep-status.G { background: var(--green-bg); color: var(--green); }
+  .dep-status.A { background: var(--amber-bg); color: var(--amber); }
+  .dep-status.R { background: var(--red-bg); color: var(--red); }
+
+  /* BLOCKER LOG */
+  .blocker-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .blocker-row:last-child { border-bottom: none; }
+  .blocker-id { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-3); width: 38px; flex-shrink: 0; padding-top: 2px; }
+  .blocker-body { flex: 1; }
+  .blocker-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .blocker-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .blocker-owner { font-size: 11px; color: var(--text-3); }
+
+  /* FOOTER */
+  .footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; }
+  .footer-l { font-size: 10px; color: var(--text-3); line-height: 1.7; }
+  .footer-r { font-size: 10px; color: var(--text-3); text-align: right; font-family: 'DM Mono', monospace; line-height: 1.7; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .fade { animation: fadeUp 0.35s ease both; }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.1s; }
+  .d3 { animation-delay: 0.15s; }
+  .d4 { animation-delay: 0.2s; }
+
+  @media print {
+    .header { position: relative; }
+    .disclaimer { display: none; }
+    .tabs { display: none; }
+    .panel { display: block !important; page-break-before: always; }
+    .panel:first-child { page-break-before: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo">Chief Data <em>&</em> Analytics Office</div>
+    <div class="header-title">AI / Data Programme Governance</div>
+  </div>
+  <div class="header-right">
+    <div class="header-meta">Q2 2025 · Wk 4</div>
+    <div class="live-dot">Illustrative</div>
+  </div>
+</header>
+
+<div class="disclaimer">⚠ Concept demo only — all data, programme names, and figures are illustrative. This dashboard shows how AI/Data programme delivery could be governed across enterprise initiatives.</div>
+
+<main class="main">
+
+  <div class="page-title-block fade">
+    <div>
+      <h1>Illustrative CDAO AI/Data Programme Governance Dashboard</h1>
+      <p>A concept demo showing how data lineage, controls, dependencies, and programme delivery could be governed across enterprise AI initiatives spanning multiple Lines of Business.</p>
+    </div>
+    <div class="cycle-badge">
+      <span class="cycle-label">Concept Demo</span>
+      <span class="cycle-date">Prepared: Apr 2025</span>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi blue fade d1">
+      <div class="kpi-label">Active AI / Data Programmes</div>
+      <div class="kpi-value">12</div>
+      <div class="kpi-note">Across 4 Lines of Business</div>
+    </div>
+    <div class="kpi green fade d2">
+      <div class="kpi-label">On-Track Delivery</div>
+      <div class="kpi-value">75<sup>%</sup></div>
+      <div class="kpi-note"><span class="delta up">↑ 8pp</span> vs prior quarter</div>
+    </div>
+    <div class="kpi amber fade d3">
+      <div class="kpi-label">Control Readiness Score</div>
+      <div class="kpi-value">83<sup>%</sup></div>
+      <div class="kpi-note">Target: 95% by Q3 2025</div>
+    </div>
+    <div class="kpi gold fade d4">
+      <div class="kpi-label">Open Risk Items</div>
+      <div class="kpi-value">7</div>
+      <div class="kpi-note"><span class="delta dn">3 escalated</span> for senior review</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('programmes')">AI/ML Programme Status</div>
+    <div class="tab" onclick="switchTab('lineage')">Data Lineage Tracker</div>
+    <div class="tab" onclick="switchTab('controls')">Control Readiness</div>
+    <div class="tab" onclick="switchTab('deps')">Stakeholder & Dependency Map</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TAB 1: AI/ML PROGRAMME STATUS             -->
+  <!-- RAG Summary → Programme Table → Actions   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel active" id="p-programmes">
+
+    <!-- RAG SUMMARY -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">RAG Summary</div>
+        <div class="card-sub">12 active programmes across all Lines of Business</div>
+      </div>
+      <div class="rag-summary-row">
+        <div class="rag-summary-item G">
+          <div class="rag-sum-dot G"></div>
+          <div class="rag-sum-label G">On Track</div>
+          <div class="rag-sum-count G">9</div>
+        </div>
+        <div class="rag-summary-item A">
+          <div class="rag-sum-dot A"></div>
+          <div class="rag-sum-label A">At Risk</div>
+          <div class="rag-sum-count A">2</div>
+        </div>
+        <div class="rag-summary-item R">
+          <div class="rag-sum-dot R"></div>
+          <div class="rag-sum-label R">Off Track</div>
+          <div class="rag-sum-count R">1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAMME DELIVERY STATUS -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Programme Delivery Status</div>
+          <div class="card-sub">All active AI/Data initiatives — illustrative</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="ptable">
+          <thead>
+            <tr>
+              <th>Programme</th>
+              <th>LOB</th>
+              <th>Status</th>
+              <th>Risk</th>
+              <th>Dependency</th>
+              <th>Next Milestone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="prog-name">GenAI Client Intelligence Platform</div></td>
+              <td><span class="prog-lob-tag">IB</span></td>
+              <td><span class="rag G">On Track</span></td>
+              <td><span class="risk-badge Low">Low</span></td>
+              <td><span class="dep-tag">None</span></td>
+              <td><span class="milestone-text">UAT sign-off · May 12</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">Enterprise Data Lineage Rollout</div></td>
+              <td><span class="prog-lob-tag">CDAO</span></td>
+              <td><span class="rag G">On Track</span></td>
+              <td><span class="risk-badge Low">Low</span></td>
+              <td><span class="dep-tag">None</span></td>
+              <td><span class="milestone-text">Phase 2 kick-off · May 5</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">ML Model Risk Controls Framework</div></td>
+              <td><span class="prog-lob-tag">Risk</span></td>
+              <td><span class="rag A">At Risk</span></td>
+              <td><span class="risk-badge Medium">Medium</span></td>
+              <td><span class="dep-tag">API Readiness</span></td>
+              <td><span class="milestone-text warn">⚠ Dependency review · May 5</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">Retail Banking Data Vault Migration</div></td>
+              <td><span class="prog-lob-tag">RB</span></td>
+              <td><span class="rag G">On Track</span></td>
+              <td><span class="risk-badge Low">Low</span></td>
+              <td><span class="dep-tag">None</span></td>
+              <td><span class="milestone-text">Go-live · Apr 30</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">API Data Gateway — Phase 3</div></td>
+              <td><span class="prog-lob-tag">CDAO</span></td>
+              <td><span class="rag G">On Track</span></td>
+              <td><span class="risk-badge Low">Low</span></td>
+              <td><span class="dep-tag">Schema Sign-off</span></td>
+              <td><span class="milestone-text">Architecture review · May 8</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">Asset Management AI Ops Platform</div></td>
+              <td><span class="prog-lob-tag">AM</span></td>
+              <td><span class="rag R">Off Track</span></td>
+              <td><span class="risk-badge High">High</span></td>
+              <td><span class="dep-tag">Data Lake Access</span></td>
+              <td><span class="milestone-text alert">🔴 Senior review required</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">Data Quality Remediation Programme</div></td>
+              <td><span class="prog-lob-tag">Risk</span></td>
+              <td><span class="rag A">At Risk</span></td>
+              <td><span class="risk-badge Medium">Medium</span></td>
+              <td><span class="dep-tag">Regulatory Deadline</span></td>
+              <td><span class="milestone-text warn">⚠ Q3 regulatory deadline</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NEXT ACTIONS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Next Actions</div>
+        <div class="card-sub">Items requiring immediate follow-up</div>
+      </div>
+      <div class="card-body" style="padding: 10px 18px">
+        <div class="action-item">
+          <div class="action-dot" style="background:var(--red)"></div>
+          <div class="action-text">AM AI Ops Platform — remediation plan to be presented to senior leadership</div>
+          <div class="action-due">Apr 29</div>
+        </div>
+        <div class="action-item">
+          <div class="action-dot" style="background:var(--amber)"></div>
+          <div class="action-text">ML Risk Controls — API dependency to be resolved with Architecture team ahead of milestone</div>
+          <div class="action-due">May 5</div>
+        </div>
+        <div class="action-item">
+          <div class="action-dot" style="background:var(--amber)"></div>
+          <div class="action-text">Data Quality Remediation — updated delivery plan required to address regulatory deadline risk</div>
+          <div class="action-due">May 9</div>
+        </div>
+        <div class="action-item">
+          <div class="action-dot" style="background:var(--green)"></div>
+          <div class="action-text">RB Data Vault — confirm go-live sign-off with LOB lead ahead of Apr 30 release</div>
+          <div class="action-due">Apr 28</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TAB 2: DATA LINEAGE TRACKER               -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel" id="p-lineage">
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">End-to-End Data Lineage Flow</div>
+          <div class="card-sub">Click any stage to inspect details. Filter by consuming LOB below.</div>
+        </div>
+        <span class="rag G">Coverage: 83%</span>
+      </div>
+
+      <div class="lineage-wrap">
+        <div class="lineage-flow">
+          <div class="ln-node">
+            <div class="ln-box source" onclick="showDetail('source')">
+              <div class="ln-icon">🗄️</div>
+              <div class="ln-title">Source Systems</div>
+              <div class="ln-sub">Core Banking · Trading · CRM · External Market Feeds</div>
+            </div>
+          </div>
+          <div class="ln-arrow">→</div>
+          <div class="ln-node">
+            <div class="ln-box transform" onclick="showDetail('transform')">
+              <div class="ln-icon">⚙️</div>
+              <div class="ln-title">Ingestion & Transformation</div>
+              <div class="ln-sub">API Gateway · ETL Pipelines · Schema Validation · Data Catalogue</div>
+            </div>
+          </div>
+          <div class="ln-arrow">→</div>
+          <div class="ln-node">
+            <div class="ln-box control" onclick="showDetail('control')">
+              <div class="ln-icon">🔒</div>
+              <div class="ln-title">Controls Layer</div>
+              <div class="ln-sub">Data Classification · Quality Checks · Ownership · Escalation Paths</div>
+            </div>
+          </div>
+          <div class="ln-arrow">→</div>
+          <div class="ln-node">
+            <div class="ln-box model" onclick="showDetail('model')">
+              <div class="ln-icon">🧠</div>
+              <div class="ln-title">AI/ML & Analytics</div>
+              <div class="ln-sub">Model Training · Feature Store · GenAI Layer · Reporting Engine</div>
+            </div>
+          </div>
+          <div class="ln-arrow">→</div>
+          <div class="ln-node">
+            <div class="ln-box consume" onclick="showDetail('consume')">
+              <div class="ln-icon">📊</div>
+              <div class="ln-title">Business Consumption</div>
+              <div class="ln-sub">IB · Retail Banking · Asset Management · Risk & Compliance</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ln-filters">
+          <span style="font-size:10px;color:var(--text-3);margin-right:2px">Filter by LOB:</span>
+          <div class="ln-filter active" onclick="filterLob(this)">All</div>
+          <div class="ln-filter" onclick="filterLob(this)">Investment Banking</div>
+          <div class="ln-filter" onclick="filterLob(this)">Retail Banking</div>
+          <div class="ln-filter" onclick="filterLob(this)">Asset Management</div>
+          <div class="ln-filter" onclick="filterLob(this)">Risk & Compliance</div>
+        </div>
+      </div>
+
+      <div class="ln-detail" id="d-source">
+        <div class="ln-detail-title">Source Systems — Stage Detail</div>
+        <div class="ln-detail-grid">
+          <div class="ln-detail-item"><span>Owner</span><em>Data Engineering / LOB IT</em></div>
+          <div class="ln-detail-item"><span>Lineage Documented</span><em>✓ 14 source systems mapped</em></div>
+          <div class="ln-detail-item"><span>Data Classification</span><em>✓ Sensitivity tags applied</em></div>
+          <div class="ln-detail-item"><span>Refresh Frequency</span><em>Real-time / T+1 by system</em></div>
+          <div class="ln-detail-item"><span>Known Gaps</span><em>2 legacy systems pending mapping</em></div>
+          <div class="ln-detail-item"><span>Control Checkpoint</span><em>✓ Defined and tested</em></div>
+        </div>
+      </div>
+      <div class="ln-detail" id="d-transform">
+        <div class="ln-detail-title">Ingestion & Transformation — Stage Detail</div>
+        <div class="ln-detail-grid">
+          <div class="ln-detail-item"><span>Owner</span><em>CDAO Data Platform Team</em></div>
+          <div class="ln-detail-item"><span>Lineage Documented</span><em>✓ API contracts via Swagger</em></div>
+          <div class="ln-detail-item"><span>Schema Governance</span><em>✓ 98% validation pass rate</em></div>
+          <div class="ln-detail-item"><span>SLA Adherence</span><em>11/12 pipelines within SLA</em></div>
+          <div class="ln-detail-item"><span>Known Gaps</span><em>AM domain pipeline — remediation in progress</em></div>
+          <div class="ln-detail-item"><span>Escalation Path</span><em>✓ CDAO Platform Lead accountable</em></div>
+        </div>
+      </div>
+      <div class="ln-detail" id="d-control">
+        <div class="ln-detail-title">Controls Layer — Stage Detail</div>
+        <div class="ln-detail-grid">
+          <div class="ln-detail-item"><span>Owner</span><em>CDAO Data Governance Office</em></div>
+          <div class="ln-detail-item"><span>Lineage Documented</span><em>⚠ Partial — 83% coverage</em></div>
+          <div class="ln-detail-item"><span>Data Quality Score</span><em>⚠ 78% — target 95% by Q3</em></div>
+          <div class="ln-detail-item"><span>Classification Status</span><em>✓ Applied across all active datasets</em></div>
+          <div class="ln-detail-item"><span>Escalation Path</span><em>✓ Defined per data domain</em></div>
+          <div class="ln-detail-item"><span>Control Checkpoint</span><em>✓ Quarterly review cadence</em></div>
+        </div>
+      </div>
+      <div class="ln-detail" id="d-model">
+        <div class="ln-detail-title">AI/ML & Analytics — Stage Detail</div>
+        <div class="ln-detail-grid">
+          <div class="ln-detail-item"><span>Owner</span><em>CDAO AI/ML Ops Team</em></div>
+          <div class="ln-detail-item"><span>Lineage Documented</span><em>⚠ Model provenance — gaps identified</em></div>
+          <div class="ln-detail-item"><span>Training Data Traceability</span><em>⚠ Remediation required for GenAI models</em></div>
+          <div class="ln-detail-item"><span>Model Registry</span><em>✓ Centralised registry in place</em></div>
+          <div class="ln-detail-item"><span>Audit Readiness</span><em>⚠ Partial — Q3 target</em></div>
+          <div class="ln-detail-item"><span>Escalation Path</span><em>✓ AI Ops Lead accountable</em></div>
+        </div>
+      </div>
+      <div class="ln-detail" id="d-consume">
+        <div class="ln-detail-title">Business Consumption — Stage Detail</div>
+        <div class="ln-detail-grid">
+          <div class="ln-detail-item"><span>Owner</span><em>LOB MDs / Data Stewards</em></div>
+          <div class="ln-detail-item"><span>Lineage Documented</span><em>✓ Consumption layer mapped per LOB</em></div>
+          <div class="ln-detail-item"><span>Access Controls</span><em>✓ Role-based access enforced</em></div>
+          <div class="ln-detail-item"><span>Reporting SLA</span><em>✓ Met for 3/4 LOBs</em></div>
+          <div class="ln-detail-item"><span>Known Gaps</span><em>AM consumption layer — delayed</em></div>
+          <div class="ln-detail-item"><span>Escalation Path</span><em>✓ LOB MD → CDAO MD</em></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Data Control Status by Pipeline</div>
+        <div class="card-sub">Lineage documentation, owner assignment, checkpoint, and escalation path per domain</div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="dctable">
+          <thead>
+            <tr>
+              <th>Pipeline / Domain</th>
+              <th>Lineage Documented</th>
+              <th>Owner Assigned</th>
+              <th>Control Checkpoint</th>
+              <th>Escalation Path</th>
+              <th>Overall</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="prog-name">IB — GenAI Platform</div></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">Ready</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">CDAO — Data Lineage Tool</div></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">Ready</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">Risk — ML Controls Framework</div></td>
+              <td><span class="rag A">⚠ Partial</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag A">⚠ In Progress</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag A">In Progress</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">RB — Data Vault Migration</div></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag G">Ready</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">AM — AI Ops Platform</div></td>
+              <td><span class="rag R">✕ Not Started</span></td>
+              <td><span class="rag A">⚠ Partial</span></td>
+              <td><span class="rag R">✕ Not Defined</span></td>
+              <td><span class="rag A">⚠ In Review</span></td>
+              <td><span class="rag R">Action Required</span></td>
+            </tr>
+            <tr>
+              <td><div class="prog-name">Risk — Data Quality Programme</div></td>
+              <td><span class="rag A">⚠ Partial</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag A">⚠ In Progress</span></td>
+              <td><span class="rag G">✓ Yes</span></td>
+              <td><span class="rag A">In Progress</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TAB 3: CONTROL READINESS                  -->
+  <!-- Readiness by Domain → Panel → Remediation -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel" id="p-controls">
+
+    <!-- READINESS BY DOMAIN -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Readiness by Domain</div>
+        <div class="card-sub">Proportion of control checkpoints met per Line of Business</div>
+      </div>
+      <div class="card-body">
+        <div class="domain-bars">
+          <div class="domain-row">
+            <div class="domain-name">Investment Banking</div>
+            <div class="domain-bar-wrap"><div class="domain-bar-fill G" style="width:100%"></div></div>
+            <div class="domain-pct G">100%</div>
+          </div>
+          <div class="domain-row">
+            <div class="domain-name">Retail Banking</div>
+            <div class="domain-bar-wrap"><div class="domain-bar-fill G" style="width:100%"></div></div>
+            <div class="domain-pct G">100%</div>
+          </div>
+          <div class="domain-row">
+            <div class="domain-name">Risk & Compliance</div>
+            <div class="domain-bar-wrap"><div class="domain-bar-fill A" style="width:71%"></div></div>
+            <div class="domain-pct A">71%</div>
+          </div>
+          <div class="domain-row">
+            <div class="domain-name">Asset Management</div>
+            <div class="domain-bar-wrap"><div class="domain-bar-fill R" style="width:29%"></div></div>
+            <div class="domain-pct R">29%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROL READINESS PANEL -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Control Readiness Panel</div>
+          <div class="card-sub">Key governance checkpoints across all active programmes</div>
+        </div>
+        <span class="rag A">83% Ready</span>
+      </div>
+      <div class="card-body" style="padding: 8px 18px">
+        <div class="ctrl-item">
+          <div class="ctrl-icon G">✓</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">Lineage Documented</div>
+            <div class="ctrl-note">End-to-end data flow mapped for 5 of 6 active pipelines. AM domain pending.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag G">5 / 6</span></div>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-icon G">✓</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">Owner Assigned</div>
+            <div class="ctrl-note">Accountable data steward confirmed for each pipeline and domain.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag G">6 / 6</span></div>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-icon A">!</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">Control Checkpoint Defined</div>
+            <div class="ctrl-note">Quality gate and validation criteria documented for 4 pipelines. Risk and AM domains still in progress.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag A">4 / 6</span></div>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-icon A">!</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">Data Quality Threshold Met</div>
+            <div class="ctrl-note">Firmwide average 78% against a target of 95% by Q3. AM and Risk domains below threshold.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag A">4 / 6</span></div>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-icon G">✓</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">Issue Escalation Path in Place</div>
+            <div class="ctrl-note">Clear escalation route defined from data domain through CDAO governance to senior leadership for all pipelines.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag G">6 / 6</span></div>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-icon R">✕</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">AI Model Data Provenance</div>
+            <div class="ctrl-note">Training data traceability not yet established for GenAI models. Remediation plan in progress.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag R">1 / 4</span></div>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-icon G">✓</div>
+          <div class="ctrl-body">
+            <div class="ctrl-name">Access Controls Enforced</div>
+            <div class="ctrl-note">Role-based access applied across all data consumption layers.</div>
+          </div>
+          <div class="ctrl-right"><span class="rag G">6 / 6</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIORITY REMEDIATION ITEMS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Priority Remediation Items</div>
+        <div class="card-sub">Actions required to close control gaps</div>
+      </div>
+      <div class="card-body">
+        <div class="remed-item R">
+          <div class="remed-dot R"></div>
+          <div class="remed-text"><strong>AM AI Ops</strong> — Document data lineage and define control checkpoints for AM domain pipelines</div>
+          <div class="remed-due">May 12</div>
+        </div>
+        <div class="remed-item R">
+          <div class="remed-dot R"></div>
+          <div class="remed-text"><strong>GenAI Models</strong> — Establish training data provenance framework across all active GenAI programmes</div>
+          <div class="remed-due">Jun 30</div>
+        </div>
+        <div class="remed-item A">
+          <div class="remed-dot A"></div>
+          <div class="remed-text"><strong>Risk & AM Domains</strong> — Data quality uplift programme to reach 95% threshold ahead of regulatory deadline</div>
+          <div class="remed-due">Sep 30</div>
+        </div>
+        <div class="remed-item A">
+          <div class="remed-dot A"></div>
+          <div class="remed-text"><strong>ML Risk Controls</strong> — Finalise control checkpoint definition pending resolution of API dependency</div>
+          <div class="remed-due">May 20</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TAB 4: STAKEHOLDER & DEPENDENCY MAP       -->
+  <!-- Stakeholder Map → Dependency → Blockers   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel" id="p-deps">
+
+    <!-- STAKEHOLDER ENGAGEMENT MAP -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Stakeholder Engagement Map</div>
+        <div class="card-sub">Accountability and engagement status per stakeholder group</div>
+      </div>
+      <div class="card-body">
+        <div class="sh-item">
+          <div>
+            <div class="sh-name">CDAO Senior Leadership</div>
+            <div class="sh-role">Overall programme sponsor · Escalation authority · ExCo reporting</div>
+          </div>
+          <span class="rag G">Engaged</span>
+        </div>
+        <div class="sh-item">
+          <div>
+            <div class="sh-name">LOB Managing Directors</div>
+            <div class="sh-role">IB, RB, AM, Risk · Delivery sign-off · Domain accountability</div>
+          </div>
+          <span class="rag G">Engaged</span>
+        </div>
+        <div class="sh-item">
+          <div>
+            <div class="sh-name">Technology Architecture</div>
+            <div class="sh-role">API Gateway design · Schema governance · Platform decisions</div>
+          </div>
+          <span class="rag A">Partial — review pending</span>
+        </div>
+        <div class="sh-item">
+          <div>
+            <div class="sh-name">Risk & Compliance</div>
+            <div class="sh-role">Regulatory framework · Control sign-off · Deadline management</div>
+          </div>
+          <span class="rag G">Engaged</span>
+        </div>
+        <div class="sh-item">
+          <div>
+            <div class="sh-name">Asset Management Data Team</div>
+            <div class="sh-role">Data lake ownership · Pipeline readiness · AM domain delivery</div>
+          </div>
+          <span class="rag R">Blocker — action required</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CROSS-LOB DEPENDENCY MAP -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Cross-LOB Dependency Map</div>
+        <div class="card-sub">How programmes depend on shared platforms and data assets across the firm</div>
+      </div>
+      <div class="card-body">
+        <div class="dep-row">
+          <div class="dep-from">GenAI Platform (IB)</div>
+          <div class="dep-arrow">→</div>
+          <div class="dep-chips">
+            <span class="chip">Feature Store</span>
+            <span class="chip">API Gateway</span>
+            <span class="chip">IB Data Mart</span>
+            <span class="chip">Model Registry</span>
+          </div>
+          <div class="dep-status G">✓</div>
+        </div>
+        <div class="dep-row">
+          <div class="dep-from">ML Risk Controls</div>
+          <div class="dep-arrow">→</div>
+          <div class="dep-chips">
+            <span class="chip">Risk Engine</span>
+            <span class="chip">API Gateway ⚠</span>
+          </div>
+          <div class="dep-status A">!</div>
+        </div>
+        <div class="dep-row">
+          <div class="dep-from">Data Lineage Tool</div>
+          <div class="dep-arrow">→</div>
+          <div class="dep-chips">
+            <span class="chip">All LOBs</span>
+            <span class="chip">Metadata Store</span>
+            <span class="chip">Source Systems</span>
+          </div>
+          <div class="dep-status G">✓</div>
+        </div>
+        <div class="dep-row">
+          <div class="dep-from">AM AI Ops Platform</div>
+          <div class="dep-arrow">→</div>
+          <div class="dep-chips">
+            <span class="chip">AM Data Lake ✕</span>
+            <span class="chip">Model Registry</span>
+            <span class="chip">Compliance API</span>
+          </div>
+          <div class="dep-status R">✕</div>
+        </div>
+        <div class="dep-row">
+          <div class="dep-from">RB Data Vault</div>
+          <div class="dep-arrow">→</div>
+          <div class="dep-chips">
+            <span class="chip">Core Banking</span>
+            <span class="chip">Data Warehouse</span>
+          </div>
+          <div class="dep-status G">✓</div>
+        </div>
+        <div class="dep-row">
+          <div class="dep-from">API Gateway (CDAO)</div>
+          <div class="dep-arrow">→</div>
+          <div class="dep-chips">
+            <span class="chip">All Programmes</span>
+            <span class="chip">External Feeds</span>
+            <span class="chip">Schema Catalogue</span>
+          </div>
+          <div class="dep-status G">✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCKER RESOLUTION LOG -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Blocker Resolution Log</div>
+        <div class="card-sub">Open blockers requiring action to unblock dependent programmes</div>
+      </div>
+      <div class="card-body" style="padding: 8px 18px">
+        <div class="blocker-row">
+          <div class="blocker-id">D-01</div>
+          <div class="blocker-body">
+            <div class="blocker-title">AM Data Lake — access provisioning delayed, blocking AM AI Ops programme</div>
+            <div class="blocker-meta">
+              <span class="rag R">Blocking</span>
+              <span class="blocker-owner">Owner: AM CTO · Due: Apr 29</span>
+            </div>
+          </div>
+        </div>
+        <div class="blocker-row">
+          <div class="blocker-id">D-02</div>
+          <div class="blocker-body">
+            <div class="blocker-title">API Gateway Swagger spec — pending Technology Architecture sign-off, at risk of delaying ML Risk Controls</div>
+            <div class="blocker-meta">
+              <span class="rag A">At Risk</span>
+              <span class="blocker-owner">Owner: Architecture Board · Due: May 5</span>
+            </div>
+          </div>
+        </div>
+        <div class="blocker-row">
+          <div class="blocker-id">D-03</div>
+          <div class="blocker-body">
+            <div class="blocker-title">Risk Engine integration SLA — agreement outstanding between Risk Tech and CDAO Platform teams</div>
+            <div class="blocker-meta">
+              <span class="rag A">At Risk</span>
+              <span class="blocker-owner">Owner: Risk Tech Lead · Due: May 12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-l">
+      Prepared by: Haiqing (Heidi) Liu<br>
+      Concept demo — all data and programme names are illustrative only<br>
+      Intended to demonstrate governance thinking for enterprise AI/Data delivery
+    </div>
+    <div class="footer-r">
+      Concept Demo · Apr 2025<br>
+      Not for distribution · v3.0
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function switchTab(name) {
+    const ids = ['programmes','lineage','controls','deps'];
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ids[i] === name));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + name));
+  }
+
+  function filterLob(el) {
+    document.querySelectorAll('.ln-filter').forEach(f => f.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  let activeDetail = null;
+  function showDetail(stage) {
+    const id = 'd-' + stage;
+    if (activeDetail === id) {
+      document.getElementById(id).classList.remove('show');
+      activeDetail = null;
+      return;
+    }
+    document.querySelectorAll('.ln-detail').forEach(d => d.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+    activeDetail = id;
+  }
+</script>
+
+</body>
+</html>
